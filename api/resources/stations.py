@@ -1,9 +1,10 @@
 from flask.ext import restful
 from flask_restful_swagger import swagger
+import queries
 
 from api.models import stations
-import queries
 from api.config import get_config
+
 
 class Stations(restful.Resource):
 
