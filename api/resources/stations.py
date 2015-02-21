@@ -2,6 +2,7 @@ from flask.ext import restful
 from flask_restful_swagger import swagger
 
 from api.models import stations
+#import configpaser
 
 
 class Stations(restful.Resource):
@@ -32,4 +33,15 @@ class Stations(restful.Resource):
         ]
     )
     def get(self):
-        return {'hello': 'world'}
+        return [
+    {
+        "station_id": "E02",
+        "x": 2700894.6385047585,
+        "y": 249141.22953005135
+    },
+    {
+        "station_id": "E03",
+        "x": 2700894.6385047585,
+        "y": 249141.22953005135
+    }
+]
