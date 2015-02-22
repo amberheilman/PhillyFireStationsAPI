@@ -5,34 +5,14 @@ import queries
 from api.config import get_config
 
 class Incidents(restful.Resource):
+    def get(self):
+        with queries.Session('postgresql://halimaolapade@localhost/philly_fire') as session:
+            results = session.query("SELECT * FROM incidents")
+            return results.items();
 
-    config = get_config()
+class Incident(restful.Resource):
+    def get(self, id):
+        with queries.Session('postgresql://halimaolapade@localhost/philly_fire') as session:
+            results = session.query("SELECT * FROM incidents WHERE id='%s'" % id.upper())
+            return results.items();
 
-    def get(self, id=None):
-        return [
-        {
-        "incident_id": 1234,
-        "responders": [
-        {
-            "id": "L02",
-            "station_id": "E02",
-            "arrived_at": "2014-01-01 00:00:00 -0500",
-            "departed_at": "2014-01-01 02:00:00 -0500"
-        },
-        {
-            "id": "E02",
-            "station_id": "E02",
-            "arrived_at": "2014-01-01 00:00:00 -0500",
-            "departed_at": "2014-01-01 02:00:00 -0500"
-        }
-        ],
-            "dispatched_at": "2014-01-01 00:00:00 -0500",
-            "type": "House fire",
-            "alarms": 4,
-            "location": {
-                "x": 2686263.115572676,
-                "y": 280759.4062628746
-            },
-            "description": "House fire at the residence of... blah"
-        }
-        ]

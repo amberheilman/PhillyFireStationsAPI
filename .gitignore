@@ -3,7 +3,8 @@
 bin
 lib
 include
-*.pyc
+logfile
+**/*.pyc
 
 # Mac OS X custom attribute files
 .DS_Store
