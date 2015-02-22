@@ -7,7 +7,7 @@ from flask import jsonify
 import queries
 import ast
 from api.models import stations
-from api.config import get_config
+from api.config import config
 
 
 class Stations(restful.Resource):

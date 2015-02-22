@@ -4,7 +4,7 @@ from flask import make_response
 from flask_restful_swagger import swagger
 from datetime import datetime
 import queries
-from api.config import get_config
+from api.config import config
 from flask_restful.utils import cors
 from flask.json import jsonify
 from collections import defaultdict
@@ -13,7 +13,10 @@ import ast
 class Incidents(restful.Resource):
     @cors.crossdomain(origin='*')
     def get(self):
+#	return config.get('postgres', 'database_name')
+#        uri = queries.uri(port=config, user=config.get('user'), password=config.get('password'))
         with queries.Session('postgresql://fire_read:rad2sz4e@localhost/philly_fire') as session:
+#        with queries.Session(uri) as session:
             results = session.query("SELECT * FROM incidents")
 	    resp = make_response(json.dumps(self._transform(results)), 200)
 	    resp.headers.extend({'Content-Type': 'application/json'})
