@@ -1,6 +1,16 @@
 # PhillyFireStationsAPI
 All PFD station data including location, run totals, and more
 
+API Endpoints:
+http://amberheilman.com/stations/
+http://amberheilman.com/stations/<id>
+http://amberheilman.com/incidents/
+http://amberheilman.com/incidents/<id>
+
+Web App:
+http://confident-tornado-80-198004.use1-2.nitrousbox.com:8080/app/#/stations
+
+
 Front end application github: https://github.com/brh55/Servo
 
 Project Resources for the data:
