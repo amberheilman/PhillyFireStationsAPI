@@ -47,34 +47,39 @@ class Station(restful.Resource):
 
     def _transform(self, result):
         response = []
+        station_info = result[0]
+               
+        areas = ast.literal_eval(station_info['service_area'])
+        service_area = []
 
+        for x,y in areas:
+            d = {
+                "x": x,
+                "y": y
+            }
+            service_area.append(d)
+ 
+        trucks = []
         for row in result:
-            areas = ast.literal_eval(row['service_area'])
-            service_area = [] 
-                 
-            for x,y in areas:
-                d = {
-                    "x": x,
-                    "y": y
-                }
-                print x, y;
-                service_area.append(d) 
-
             entry = {
-            "station_id": row['id'],
-            "address": row['address'],
-            "city": row['city'],
-            "x": row['latitude'],
-            "y": row['longitude'],
-            "batallion_commander": row['chief'],
-            "total_runs": row['totalruns'],
-            "service_area": service_area,
-            "trucks": {
                 'id': row['truck_id'],
                 'type': row['type'],
                 'runs': row['runs']
-            }
             };
 
-            response.append(entry)
+            trucks.append(entry)
+        
+        station_entry = {
+            "station_id": station_info['id'],
+            "address": station_info['address'],
+            "city": station_info['city'],
+            "x": station_info['latitude'],
+            "y": station_info['longitude'],
+            "batallion_commander": station_info['chief'],
+            "total_runs": station_info['totalruns'],
+            "service_area": service_area,
+            "trucks": trucks
+            };
+
+        response.append(station_entry)
         return response
