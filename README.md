@@ -2,10 +2,10 @@
 All PFD station data including location, run totals, and more
 
 API Endpoints:
-http://amberheilman.com/stations/
-http://amberheilman.com/stations/<id>
-http://amberheilman.com/incidents/
-http://amberheilman.com/incidents/<id>
+http://philly.ems.watch/stations/
+http://philly.ems.watch/stations/<id>
+http://philly.ems.watch/incidents/
+http://philly.ems.watch/incidents/<id>
 
 Web App:
 http://confident-tornado-80-198004.use1-2.nitrousbox.com:8080/app/#/stations
