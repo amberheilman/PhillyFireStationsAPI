@@ -1,3 +1,8 @@
+Run Tests
+=========
+python -m tornado.test.runtests
+
+
 # PhillyFireStationsAPI
 All PFD station data including location, run totals, and more
 

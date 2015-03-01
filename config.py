@@ -2,6 +2,7 @@ import ConfigParser
 
 
 def config():
+
     config = ConfigParser.RawConfigParser()
-    config.readfp(open('/home/amber/git/config.conf'))
+    config.readfp(open('/etc/ems_api_config.conf'))
     return config
