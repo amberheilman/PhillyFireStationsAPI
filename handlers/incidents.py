@@ -4,7 +4,7 @@ import queries
 from tornado import web, gen
 from tornado.web import RequestHandler
 
-from api import config
+from configuration import config
 
 
 class IncidentCollection(RequestHandler):
