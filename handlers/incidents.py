@@ -1,16 +1,20 @@
 import ast
 import logging
+import os
+
 import queries
 from tornado import web, gen
 from tornado.web import RequestHandler
 
-from configuration import config
+
+logger = logging.getLogger(__name__)
+PG_URI = os.environ.get('POSTGRES_URI')
 
 
 class IncidentCollection(RequestHandler):
 
     def initialize(self):
-        self.session = queries.TornadoSession(config.get('uri'))
+        self.session = queries.TornadoSession(PG_URI)
 
     @gen.coroutine
     def prepare(self):
@@ -18,7 +22,7 @@ class IncidentCollection(RequestHandler):
             yield self.session.validate()
 
         except queries.OperationalError as error:
-            logging.error('Error connecting to the database: %s', error)
+            logger.error('Error connecting to the database: %s', error)
             raise web.HTTPError(503)
 
     def options(self, *args, **kwargs):
@@ -43,11 +47,11 @@ class IncidentCollection(RequestHandler):
                 self.set_status(204)
                 self.finish()
 
-            results.free()
             incidents = self._transform(results)
+            results.free()
 
         except (queries.DataError, queries.IntegrityError) as error:
-            logging.exception('Error making query: %s', error)
+            logger.exception('Error making query: %s', error)
             self.set_status(409)
             self.finish({'error':
                         {'description': error.pgerror.split('\n')[0][8:]}})
@@ -78,7 +82,7 @@ class IncidentCollection(RequestHandler):
 class IncidentEntry(IncidentCollection):
 
     def initialize(self):
-        self.session = queries.TornadoSession(config.get('uri'))
+        self.session = queries.TornadoSession(PG_URI)
 
     @gen.coroutine
     def prepare(self):
@@ -86,7 +90,7 @@ class IncidentEntry(IncidentCollection):
             yield self.session.validate()
 
         except queries.OperationalError as error:
-            logging.error('Error connecting to the database: %s', error)
+            logger.error('Error connecting to the database: %s', error)
             raise web.HTTPError(503)
 
     def options(self, *args, **kwargs):

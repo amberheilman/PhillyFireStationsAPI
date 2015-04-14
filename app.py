@@ -1,5 +1,6 @@
 import logging
 import logging.config
+import os
 
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -8,9 +9,7 @@ from handlers import stations, incidents
 
 from configuration import config
 
-config = config()
-log_file = config.get('logging', 'file')
-logging.config.fileConfig(log_file)
+logging.config.fileConfig(os.environ.get('LOG_FILE'))
 logger = logging.getLogger(__name__)
 
 def make_app():
