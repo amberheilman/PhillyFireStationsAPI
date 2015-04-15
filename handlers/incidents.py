@@ -1,4 +1,5 @@
 import ast
+import json
 import logging
 import os
 
@@ -43,11 +44,12 @@ class IncidentCollection(RequestHandler):
         try:
             results = yield self.session.query("SELECT * FROM incidents")
 
+            print(results)
             if not results:
                 self.set_status(204)
                 self.finish()
 
-            incidents = self._transform(results)
+            response = self._transform(results)
             #results.free()
 
         except (queries.DataError, queries.IntegrityError) as error:
@@ -59,7 +61,8 @@ class IncidentCollection(RequestHandler):
         else:
             self.set_header('Content-Type', 'application/json')
             self.set_status(200)
-            self.finish(incidents)
+            self.write(response)
+            self.finish()
 
     def _transform(self, results):
         response = {}

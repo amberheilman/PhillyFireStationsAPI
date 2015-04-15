@@ -9,75 +9,82 @@ from tornado.web import Application
 
 from handlers import incidents
 
-
-class TestIncidentCollection(AsyncHTTPTestCase):
+class _BaseIncidentCollection(AsyncHTTPTestCase):
     url = '/incidents'
-    expected_status_code = 200
     method = 'GET'
+    expected_status_code = 200
+    expected_response = {}
+    results = [{'id': 1,
+                'dispatched_at': datetime.now(),
+                'type': 'House Fire',
+                'alarms': 2,
+                'location': (2.4, 3.4)}]
+    def setUp(cls):
+        super(_BaseIncidentCollection, cls).setUp()
+        cls.configure()
+        cls.execute()
 
-    def setUp(self):
-        super(TestIncidentCollection, self).setUp()
-        self.configure()
-        self.execute()
-
-    def configure(self):
+    def configure(cls):
         pass
 
-    def get_app(self):
+    def get_app(cls):
         return Application([('/incidents', incidents.IncidentCollection),
                             ('/incidents/<id>', incidents.IncidentEntry)])
 
     @patch('queries.TornadoSession')
-    def execute(self, session):
-        self.session = session.return_value
-        self.results = [{'id': 1,
-                         'dispatched_at': datetime.now(),
-                         'type': 'House Fire',
-                         'alarms': 2,
-                         'location': (2.4, 3.4)}]
-
+    def execute(cls, session):
+        cls.session = session.return_value
 
         future_is_valid = Future()
         future_is_valid.set_result(True)
         future_query = Future()
-        future_query.set_result(self.results)
-        self.session.validate.return_value = future_is_valid
-        self.session.query.return_value = future_query
-        self.session.query.free = Mock()
+        future_query.set_result(cls.results)
+        cls.session.validate.return_value = future_is_valid
+        cls.session.query.return_value = future_query
+        cls.session.query.free = Mock()
 
 
-        self.response = self.fetch(self.url, method=self.method)
+        cls.response = cls.fetch(cls.url, method=cls.method)
+        if cls.response.body:
+            cls.json = json.loads(cls.response.body.decode('utf-8'))
 
-    def tearDown(self):
-        pass
-
-#    def test_response_is_json(self):
-#        self.assertIsInstance(self.response.body.json(), dict)
-#
     def test_returns_expected_status_code(self):
         self.assertEqual(self.response.code, self.expected_status_code)
 
-#    def test_returns_expected_response(self):
-#        self.assertEqual(self.response.json, self.expected_response)
-#
-#
-#class TestIncidentNoResults(TestIncidentCollection):
-#    expected_status_code = 201
-#
-#
-#class TestIncidentMethodNotFound(TestIncidentCollection):
-#    expected_status_code = 405
-#
-#
-#class TestIncidentHasOptions(TestIncidentCollection):
-#    method = 'OPTIONS'
-#    expected_response_header = 'Allow: GET'
-#
-#    def test_returns_get_method_as_option(self):
-#        self.assertEqual(self.response.header.get('Allow'),
-#                         self.expected_response_header)
-#
-#
-#class TestReturnsExpectedIncident(TestIncidentCollection):
-#    expected_response_body = {}
-#
+class TestIncidentCollectionOneResult(_BaseIncidentCollection):
+
+    def test_response_is_bytes(self):
+        self.assertIsInstance(self.response.body, bytes)
+
+    def test_returns_incident_id(self):
+        self.assertIn('incident_id', self.json)
+
+    def test_returns_incident_dispatched_at_time(self):
+        self.assertIn('dispatched_at', self.json)
+
+    def test_returns_incident_type(self):
+        self.assertIn('type', self.json)
+
+    def test_returns_incident_alarms(self):
+        self.assertIn('alarms', self.json)
+
+    def test_returns_incident_location(self):
+        self.assertIn('location', self.json)
+
+
+class TestIncidentNoResults(_BaseIncidentCollection):
+    results = None
+    expected_status_code = 204
+
+
+class TestIncidentCollectionMethodNotAllowed(_BaseIncidentCollection):
+    method = 'POST'
+    expected_status_code = 405
+
+
+class TestIncidentHasOptions(_BaseIncidentCollection):
+    method = 'OPTIONS'
+
+    def test_returns_expected_header(self):
+        self.assertIn('GET', self.response.headers.pop('Allow'))
+
