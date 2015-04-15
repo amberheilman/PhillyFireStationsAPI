@@ -1,6 +1,7 @@
+from concurrent.futures import Future
+from datetime import datetime
 import json
-import mock
-from mock import patch
+from mock import Mock, MagicMock, patch
 
 from tornado.testing import AsyncHTTPTestCase
 from tornado.testing import gen_test
@@ -10,7 +11,7 @@ from handlers import incidents
 
 
 class TestIncidentCollection(AsyncHTTPTestCase):
-    url = '/incidents/'
+    url = '/incidents'
     expected_status_code = 200
     method = 'GET'
 
@@ -26,9 +27,25 @@ class TestIncidentCollection(AsyncHTTPTestCase):
         return Application([('/incidents', incidents.IncidentCollection),
                             ('/incidents/<id>', incidents.IncidentEntry)])
 
-    @patch('queries.TornadoSession', return_value='{}')
+    @patch('queries.TornadoSession')
     def execute(self, session):
-        self.session = session = mock.Mock()
+        self.session = session.return_value
+        self.results = [{'id': 1,
+                         'dispatched_at': datetime.now(),
+                         'type': 'House Fire',
+                         'alarms': 2,
+                         'location': (2.4, 3.4)}]
+
+
+        future_is_valid = Future()
+        future_is_valid.set_result(True)
+        future_query = Future()
+        future_query.set_result(self.results)
+        self.session.validate.return_value = future_is_valid
+        self.session.query.return_value = future_query
+        self.session.query.free = Mock()
+
+
         self.response = self.fetch(self.url, method=self.method)
 
     def tearDown(self):

@@ -48,7 +48,7 @@ class IncidentCollection(RequestHandler):
                 self.finish()
 
             incidents = self._transform(results)
-            results.free()
+            #results.free()
 
         except (queries.DataError, queries.IntegrityError) as error:
             logger.exception('Error making query: %s', error)
@@ -62,19 +62,16 @@ class IncidentCollection(RequestHandler):
             self.finish(incidents)
 
     def _transform(self, results):
-        response = []
+        response = {}
 
         for row in results:
-            # TODO: add try/except for invalid data
-            row_loc = ast.literal_eval(row['location'])
-            location = {'x': row_loc[0], 'y': row_loc[1]}
-            entry = [{"incident_id": row['id'],
-                      "dispatched_at": row['dispatched_at'].strftime(
-                          "%Y-%m-%d %H:%M:%S"),
-                      "type": row['type'],
-                      "alarms": row['alarms'],
-                      "location": location}]
-        response.append(entry)
+            entry = {'incident_id': row['id'],
+                      'dispatched_at': row['dispatched_at'].strftime(
+                          '%Y-%m-%d %H:%M:%S'),
+                      'type': row['type'],
+                      'alarms': row['alarms'],
+                      'location': row['location']}
+            response.update(entry)
 
         return response
 
