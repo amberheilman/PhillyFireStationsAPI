@@ -44,7 +44,6 @@ class IncidentCollection(RequestHandler):
         try:
             results = yield self.session.query("SELECT * FROM incidents")
 
-            print(results)
             if not results:
                 self.set_status(204)
                 self.finish()
@@ -61,8 +60,7 @@ class IncidentCollection(RequestHandler):
         else:
             self.set_header('Content-Type', 'application/json')
             self.set_status(200)
-            self.write(response)
-            self.finish()
+            self.finish(response)
 
     def _transform(self, results):
         response = {}
