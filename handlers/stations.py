@@ -4,13 +4,13 @@ import queries
 from tornado import web, gen
 from tornado.web import RequestHandler
 
-from configuration import config
+PG_URI = os.environ.get('PG_URI')
 
 
 class StationCollection(RequestHandler):
 
     def initialize(self):
-        self.session = queries.TornadoSession(config.get('uri'))
+        self.session = queries.TornadoSession(PG_URI)
 
     @gen.coroutine
     def prepare(self):
@@ -47,8 +47,8 @@ class StationCollection(RequestHandler):
                 self.set_status(204)
                 self.finish()
 
-            results.free()
             stations = self._transform(results)
+            results.free()
 
         except (queries.DataError, queries.IntegrityError) as error:
             logging.exception('Error making query: %s', error)
@@ -116,8 +116,8 @@ class StationEntry(RequestHandler):
                 self.set_status(204)
                 self.finish()
 
-            results.free()
             stations = self._transform(results)
+            results.free()
 
         except (queries.DataError, queries.IntegrityError) as error:
             logging.exception('Error making query: %s', error)
