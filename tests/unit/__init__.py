@@ -4,9 +4,8 @@ import json
 from mock import Mock, patch
 
 from tornado.testing import AsyncHTTPTestCase
-from tornado.web import Application
 
-from handlers import incidents, stations
+from app import make_app
 
 
 class _BaseAPITest(AsyncHTTPTestCase):
@@ -17,7 +16,7 @@ class _BaseAPITest(AsyncHTTPTestCase):
                 'type': 'House Fire',
                 'alarms': 2,
                 'location': (2.4, 3.4)}]
-    responses = frozenset()
+    responses = []
 
     def setUp(cls):
         super(_BaseAPITest, cls).setUp()
@@ -25,10 +24,7 @@ class _BaseAPITest(AsyncHTTPTestCase):
         cls.execute()
 
     def get_app(cls):
-        return Application([('/incidents', incidents.IncidentCollection),
-                           ('/incidents/<id>', incidents.IncidentEntry),
-                           ('/stations', stations.StationCollection),
-                           ('/stations/<id>', stations.StationEntry)])
+        return make_app()
 
     @classmethod
     def configure(cls):
@@ -41,13 +37,14 @@ class _BaseAPITest(AsyncHTTPTestCase):
         cls.session = session.return_value
         cls.session.validate.return_value = cls.future_is_valid
         cls.session.query.return_value = cls.future_query
-        for request in req_kwargs:
-            responses.add(cls.fetch(**cls.req_kwargs))
-
-        try:
-            cls.json = json.loads(cls.response.body.decode('utf-8'))
-        except (ValueError, AttributeError):
-            pass
+        for request_kwargs in cls.req_kwargs:
+            cls.response = cls.fetch(**request_kwargs)
+            cls.responses.append(cls.response)
+            try:
+                cls.json = json.loads(cls.response.body.decode('utf-8'))
+                cls.responses.append(cls.json)
+            except (ValueError, AttributeError):
+                pass
 
     def test_returns_expected_status_code(self):
         self.assertEqual(self.response.code, self.expected_status_code)

@@ -6,9 +6,6 @@ from . import _BaseAPITest
 
 class TestIncidentCollectionOneResult(_BaseAPITest):
 
-    def test_response_is_bytes(self):
-        self.assertIsInstance(self.response.body, bytes)
-
     def test_returns_incident_id(self):
         self.assertIn('incident_id', self.json)
 

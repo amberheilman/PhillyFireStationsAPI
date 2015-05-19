@@ -7,13 +7,39 @@ from tornado.ioloop import IOLoop
 from tornado.web import Application, url
 from handlers import stations, incidents
 
-from configuration import config
+LOG_CONFIG = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'default': {
+            'level':'INFO',
+            'class':'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'tornado': {
+            'handlers': ['default'],
+            'level': 'INFO',
+            'propagate': True
+        },
+        'ROOT': {
+            'handlers': ['default'],
+            'level': 'WARN',
+            'propagate': False 
+        },
+    }
+}
 
-logging.config.fileConfig(os.environ.get('LOG_FILE'))
+logging.config.dictConfig(LOG_CONFIG)
 logger = logging.getLogger(__name__)
 
+
 def make_app():
-    logger.info('MAKING APPLICATION')
     return Application([
         url(r'/stations', stations.StationCollection),
         url(r'/stations/<id>', stations.StationEntry),
