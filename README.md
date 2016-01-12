@@ -1,5 +1,6 @@
 Run Tests
 =========
+docker-compose up -d
 python -m tornado.test.runtests
 
 

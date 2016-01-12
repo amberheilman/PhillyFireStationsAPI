@@ -4,6 +4,7 @@ import json
 from mock import Mock, patch
 
 from tornado.testing import AsyncHTTPTestCase
+import queries
 
 from app import make_app
 
@@ -30,7 +31,9 @@ class _BaseAPITest(AsyncHTTPTestCase):
     def configure(cls):
         cls.future_is_valid = cls.future_query = Future()
         cls.future_is_valid.set_result(True)
-        cls.future_query.set_result(cls.results)
+        from mock import MagicMock
+        cls.mock_cursor = MagicMock(return_value=cls.results)
+        cls.future_query.set_result(cls.mock_cursor)
 
     @patch('queries.TornadoSession')
     def execute(cls, session):
@@ -45,6 +48,7 @@ class _BaseAPITest(AsyncHTTPTestCase):
                 cls.responses.append(cls.json)
             except (ValueError, AttributeError):
                 pass
+        print('json', cls.json)
 
     def test_returns_expected_status_code(self):
         self.assertEqual(self.response.code, self.expected_status_code)

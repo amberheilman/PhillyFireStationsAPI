@@ -1,0 +1,10 @@
+api:
+  build: .
+  links:
+   - db
+  ports:
+   - 8000
+
+db:
+  image: postgres
+  command: psql -U postgres -f schema.sql

@@ -29,7 +29,7 @@ LOG_CONFIG = {
         },
         'ROOT': {
             'handlers': ['default'],
-            'level': 'WARN',
+            'level': 'INFO',
             'propagate': False 
         },
     }
@@ -50,7 +50,7 @@ def make_app():
 def main():
     app = make_app()
     server = HTTPServer(app)
-    server.bind(8888)
+    server.bind(8000)
     server.start(0)
     IOLoop.current().start()
 

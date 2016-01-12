@@ -1,0 +1,12 @@
+Queries
+- What trucks responded to an incident?
+- What time did each truck arrive?
+- When was the first truck dispatched?
+- How close were they to the scene?
+- Were they the closest? Considering brown-outs/closings?
+- How many incidents happend during a particular time frame?
+- How many fires happend during a time frame?
+- How many active stations are there?
+- How many incidents did this truck go on?
+- How many fires did this truck/station go on?
+

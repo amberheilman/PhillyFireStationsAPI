@@ -35,13 +35,11 @@ class StationCollection(RequestHandler):
 
     @gen.coroutine
     def get(self):
+        """Get all stations
 
+        """
         try:
-            results = self.session.query(
-                "SELECT  s.id,  s.address, s.city,  s.latitude, "
-                "s.longitude, dt.runs FROM stations as s JOIN ("
-                "SELECT station_id, SUM (runs) AS runs FROM truck_runs "
-                "GROUP BY station_id ) as dt ON s.id = dt.station_id")
+            results = self.session.call_proc('get_stations')
             return self._transform(results)
 
             if not results:
@@ -53,16 +51,15 @@ class StationCollection(RequestHandler):
 
         except (queries.DataError, queries.IntegrityError) as error:
             logging.exception('Error making query: %s', error)
-            self.set_status(409)
+            self.set_status(500)
             self.finish({'error':
                         {'description': error.pgerror.split('\n')[0][8:]}})
-
         else:
             self.set_header('Content-Type', 'application/json')
             self.set_status(200)
             self.finish(stations)
 
-    def _transform(self, result):
+    def _transform(self, results):
         response = []
 
         for row in result:
