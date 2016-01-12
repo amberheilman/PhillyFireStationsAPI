@@ -1,5 +1,7 @@
 FROM python
 MAINTAINER Amber Heilman
-RUN python app.py
+COPY dist
+RUN pip install dist/philly*.whl
 ENV PGSQL_URI=postgresql://fire_read@localhost:5432/philly_fire
 EXPOSE 8000
+ENTRYPOINT python app.py

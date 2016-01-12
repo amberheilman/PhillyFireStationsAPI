@@ -1,4 +1,0 @@
-mock==1.0.1
-psycopg2==2.5.4
-queries==1.7.0
-tornado==4.0.2
