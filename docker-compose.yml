@@ -7,4 +7,7 @@ api:
 
 db:
   image: postgres
-  command: psql -U postgres -f schema.sql
+  volumes:
+    - schema.sql:/schema.sql
+  ports:
+    - 5432

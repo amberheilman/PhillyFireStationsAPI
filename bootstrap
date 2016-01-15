@@ -1,0 +1,27 @@
+#!/bin/sh
+
+echo 'Starting docker virtual machine'
+docker-machine create --driver virtualbox emswatch
+docker-machine env emswatch
+eval "$(docker-machine env emswatch)"
+
+echo 'Bringing up docker containers'
+docker-compose stop
+docker-compose rm --force
+docker-compose pull
+
+docker-compose up -d db
+db_host=$(docker-machine ip emswatch)
+db_port=$(docker-compose port db 5432 | cut -d: -f2)
+echo "postgres container host: $db_host port: $db_port"
+echo "export POSTGRES_URI=postgresql://postgres@${db_host}:${db_port}/philly_fire"
+while
+  :
+do
+  if psql -h $db_host -p $db_port -U postgres -f schema.sql
+  then
+    break
+  fi
+  echo "Waiting on postgres container"
+  sleep 2
+done

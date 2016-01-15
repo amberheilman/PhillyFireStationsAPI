@@ -6,7 +6,7 @@ from mock import Mock, patch
 from tornado.testing import AsyncHTTPTestCase
 import queries
 
-from app import make_app
+from emswatch.app import make_app
 
 
 class _BaseAPITest(AsyncHTTPTestCase):
