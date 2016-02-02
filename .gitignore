@@ -1,13 +1,6 @@
-# Python files 
 *.pyc
-.Python
-bin
+env
 lib
-include
-logfile
 **/*.pyc
 *.egg-info/*
 dist/*
-
-# Mac OS X custom attribute files
-.DS_Store

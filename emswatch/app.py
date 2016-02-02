@@ -5,7 +5,7 @@ import os
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application, url
-from emswatch.handlers import stations, incidents
+from handlers import stations, incidents
 
 LOG_CONFIG = {
     'version': 1,
@@ -27,7 +27,7 @@ LOG_CONFIG = {
             'level': 'INFO',
             'propagate': True
         },
-        'ROOT': {
+        'root': {
             'handlers': ['default'],
             'level': 'INFO',
             'propagate': False 

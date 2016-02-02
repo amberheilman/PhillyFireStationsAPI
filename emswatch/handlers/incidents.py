@@ -46,10 +46,11 @@ class IncidentEntry(_BaseHandler):
     @gen.coroutine
     def get(self, incident_id):
         """Return a single incident
+
         """
         try:
             results = yield self.session.query(
-                "SELECT * FROM incidents WHERE id='%s'" % incident_id.upper())
+                "SELECT * FROM incidents WHERE id=%s" % int(incident_id))
         except queries.DataError as error:
             logger.exception('Error making query: %s', error)
             self.set_status(400)
